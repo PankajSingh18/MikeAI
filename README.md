@@ -225,8 +225,4 @@ Push to main
 
 MIT License
 
----
 
-<div align="center">
-  Built with ❤️ by <a href="https://github.com/PankajSingh18">Pankaj Singh</a>
-</div>
