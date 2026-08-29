@@ -54,6 +54,62 @@ MikeAI uses a **microservices** architecture with an API Gateway pattern:
 
 ---
 
+## 🤖 Agent System
+
+MikeAI uses **LangGraph** to orchestrate a multi-agent pipeline. Every user message flows through a **Router** that intelligently selects the right specialist agent based on the query type or uploaded file.
+
+### Agent Flow
+
+```
+User Message / File
+        │
+        ▼
+  ┌───────────┐
+  │  Router   │  ← LLM-based intent classifier
+  └─────┬─────┘
+        │
+  ┌─────▼──────────────────────────────────────────────┐
+  │  Conditional Routing                               │
+  │                                                    │
+  │  text query  →  chat / search / coding / pdf / ppt │
+  │  image file  →  imageAnalyzer                      │
+  │  pdf file    →  pdfRag                             │
+  └────────────────────────────────────────────────────┘
+```
+
+### Agents
+
+| Agent | Trigger | What it does |
+|-------|---------|--------------|
+| 🗣️ **Chat** | General questions, explanations, learning | Conversational AI responses in Markdown |
+| 🔍 **Search** | Current events, latest news, recent info | Web search → passes results to Chat agent |
+| 💻 **Coding** | Code generation, debugging, review, optimization | Classifies coding intent, generates full HTML/CSS/JS projects or returns Markdown explanations |
+| 📄 **PDF** | "Generate a PDF" requests | Creates and returns a downloadable PDF document |
+| 📊 **PPT** | "Generate a presentation" requests | Creates and returns a downloadable PowerPoint file |
+| 🎨 **Vision** | "Generate an image / create an image" | AI image generation |
+| 🔎 **PDF RAG** | When user uploads a PDF file | Extracts and answers questions from the uploaded PDF using RAG |
+| 🖼️ **Image Analyzer** | When user uploads an image file | Analyzes and describes the uploaded image using vision LLM |
+
+### Coding Agent — Intent Classification
+
+The Coding agent runs a secondary LLM call to classify the coding intent before responding:
+
+| Intent | Response type |
+|--------|---------------|
+| `CODE_GENERATION` | Returns full project files (JSON artifact) rendered in the Artifact panel |
+| `CODE_REVIEW` | Returns Markdown analysis |
+| `CODE_EXPLANATION` | Returns Markdown explanation |
+| `DEBUGGING` | Returns Markdown with fixes |
+| `OPTIMIZATION` | Returns Markdown with improved code |
+| `CONVERSION` | Returns Markdown with converted code |
+| `DOCUMENTATION` | Returns Markdown docs |
+
+### Credit System
+
+Each agent call deducts credits from the user's account. Users on the **Free** plan have limited credits per agent type and can upgrade to **Pro** via Razorpay billing.
+
+---
+
 ## 📁 Project Structure
 
 ```
